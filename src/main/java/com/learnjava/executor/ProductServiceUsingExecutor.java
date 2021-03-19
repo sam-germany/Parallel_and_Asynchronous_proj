@@ -29,9 +29,11 @@ public class ProductServiceUsingExecutor {
         Future<Review> reviewFuture =  executorService22.submit(()-> reviewService.retrieveReviews(productId));
 
   //      ProductInfo productInfo =  productInfoFuture.get();      // if some error happens in the call then we will infinitely
-        ProductInfo productInfo =  productInfoFuture.get(1, TimeUnit.SECONDS); // as we put 1-Sec  means if the result does
-        Review  review = reviewFuture.get();                                         // not come in 1-Sec then code execute further
-                                                                                   // without waiting for this result.
+        ProductInfo productInfo =  productInfoFuture.get(2, TimeUnit.SECONDS); // as we put 1-Sec  means if the result does
+        Review  review = reviewFuture.get();                                  // not come in 1-Sec then it throws a Timeout exception
+
+        // Note:   .get()   <-- it blocks the code till we get the result, only after we get the result it will execute further this is a limitation of Executor Service
+
         stopWatch.stop();
         log("Total Time Taken : "+ stopWatch.getTime());
         return new Product(productId, productInfo, review );
@@ -46,5 +48,6 @@ public class ProductServiceUsingExecutor {
         Product product = productService.retrieveProductDetails(productId);
         log("Product is " + product);
 
+       executorService22.shutdown();
     }
 }
